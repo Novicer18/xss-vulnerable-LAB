@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: xss_lab_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${DB_NAME:-xss_lab}
+      MYSQL_USER: ${DB_USER:-xssuser}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-xsspassword}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/seed.sql
+    networks:
+      - xss-network
+
+  app:
+    build: .
+    container_name: xss_training_app
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME:-xss_lab}
+      DB_USER: ${DB_USER:-xssuser}
+      DB_PASSWORD: ${DB_PASSWORD:-xsspassword}
+      SESSION_SECRET: ${SESSION_SECRET:-your-session-secret-here}
+      NODE_ENV: development
+    depends_on:
+      - mysql
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - xss-network
+
+volumes:
+  mysql_data:
+
+networks:
+  xss-network:
+    driver: bridge

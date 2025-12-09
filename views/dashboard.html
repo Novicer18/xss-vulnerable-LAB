@@ -1,0 +1,86 @@
+<div class="dashboard">
+    <header class="page-header">
+        <h1><i class="fas fa-bug"></i> XSS Training Laboratory</h1>
+        <p class="subtitle">Hands-on Cross-Site Scripting vulnerability training environment</p>
+    </header>
+
+    <div class="alert alert-warning">
+        <h3><i class="fas fa-exclamation-triangle"></i> Important Safety Notice</h3>
+        <p>This application is intentionally vulnerable for educational purposes. All vulnerabilities are isolated within this lab environment.</p>
+        <p><strong>Do not:</strong> Use real personal data • Attack non-lab systems • Deploy this in production</p>
+    </div>
+
+    <div class="modules-grid">
+        <% modules.forEach(module => { %>
+        <div class="module-card">
+            <div class="module-header">
+                <h3><%= module.name %></h3>
+                <span class="difficulty badge-<%= module.difficulty.toLowerCase() %>">
+                    <%= module.difficulty %>
+                </span>
+            </div>
+            <p class="module-description"><%= module.description %></p>
+            <div class="module-features">
+                <span class="feature"><i class="fas fa-check-circle"></i> Real-world simulation</span>
+                <span class="feature"><i class="fas fa-check-circle"></i> Multiple payload types</span>
+                <span class="feature"><i class="fas fa-check-circle"></i> Safe environment</span>
+            </div>
+            <a href="<%= module.path %>" class="btn btn-primary btn-block">
+                Start Challenge <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        <% }); %>
+    </div>
+
+    <div class="quick-start">
+        <h2><i class="fas fa-rocket"></i> Quick Start Guide</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h4>Choose a Module</h4>
+                <p>Select Reflected, Stored, or DOM-Based XSS challenge</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h4>Study the Vulnerability</h4>
+                <p>Read the description and hints provided</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h4>Craft Your Payload</h4>
+                <p>Use the examples or create your own XSS payload</p>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <h4>Execute & Learn</h4>
+                <p>Test the payload and understand how it works</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="payload-examples">
+        <h2><i class="fas fa-code"></i> Example XSS Payloads</h2>
+        <div class="payload-grid">
+            <div class="payload-card">
+                <h4>Basic Script</h4>
+                <code>&lt;script&gt;alert('XSS')&lt;/script&gt;</code>
+                <p>Simple script tag injection</p>
+            </div>
+            <div class="payload-card">
+                <h4>Image with onerror</h4>
+                <code>&lt;img src=x onerror=alert(1)&gt;</code>
+                <p>Event handler based injection</p>
+            </div>
+            <div class="payload-card">
+                <h4>JavaScript URI</h4>
+                <code>javascript:alert(document.cookie)</code>
+                <p>JavaScript in URL protocol</p>
+            </div>
+            <div class="payload-card">
+                <h4>SVG Payload</h4>
+                <code>&lt;svg onload=alert(1)&gt;&lt;/svg&gt;</code>
+                <p>SVG with event handler</p>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,153 @@
+<div class="challenge-container">
+    <div class="challenge-header">
+        <h1><i class="fas fa-code"></i> DOM-Based XSS Challenge</h1>
+        <div class="challenge-meta">
+            <span class="badge badge-hard">Difficulty: Hard</span>
+            <span class="badge badge-danger">Client-Side</span>
+        </div>
+    </div>
+
+    <div class="challenge-description">
+        <h2><i class="fas fa-info-circle"></i> Description</h2>
+        <p>DOM-based XSS occurs when client-side JavaScript processes user input in an unsafe way and writes it to the Document Object Model. The vulnerability is entirely in client-side code - the server response isn't malicious, but the client-side script makes it dangerous.</p>
+        
+        <div class="vulnerable-code">
+            <h4><i class="fas fa-code"></i> Vulnerable Code Pattern:</h4>
+            <pre><code>// Client-side JavaScript
+var userInput = window.location.hash.substring(1);
+document.getElementById('output').innerHTML = userInput;
+// No sanitization! DOM XSS vulnerability
+
+// Or using eval()
+var data = getURLParameter('data');
+eval('process(' + data + ')'); // Dangerous!</code></pre>
+        </div>
+    </div>
+
+    <div class="hints">
+        <h3><i class="fas fa-lightbulb"></i> Hints</h3>
+        <ul>
+            <% hints.forEach(hint => { %>
+            <li><%= hint %></li>
+            <% }); %>
+        </ul>
+    </div>
+
+    <div class="challenge-sections">
+        <div class="section">
+            <h3><i class="fas fa-window-restore"></i> Fragment Identifier XSS</h3>
+            <p>The URL fragment (after #) is processed by client-side JavaScript:</p>
+            <div class="url-examples">
+                <a href="#welcome" class="btn btn-secondary">#welcome</a>
+                <a href="#<script>alert('DOM XSS')</script>" class="btn btn-danger">Try XSS in fragment</a>
+                <a href="#<img src=x onerror=alert(1)>" class="btn btn-danger">Image payload</a>
+            </div>
+            
+            <div id="fragmentOutput" class="result-box">
+                <p>Fragment content will appear here</p>
+            </div>
+            
+            <div class="code-reveal">
+                <button onclick="toggleCode('fragmentCode')" class="btn btn-sm btn-outline">
+                    Show/Hide Vulnerable Code
+                </button>
+                <pre id="fragmentCode" style="display: none;"><code>// Vulnerable fragment handler
+window.onload = function() {
+    var fragment = window.location.hash.substring(1);
+    if (fragment) {
+        document.getElementById('fragmentOutput').innerHTML = 
+            "Fragment content: " + fragment; // UNSAFE!
+    }
+};</code></pre>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3><i class="fas fa-search"></i> Client-Side Search</h3>
+            <div class="search-box">
+                <input type="text" id="domSearch" class="form-control" 
+                       placeholder="Search... try XSS payloads">
+                <button onclick="performSearch()" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+            
+            <div id="searchResults" class="result-box">
+                <p>Search results will appear here</p>
+            </div>
+            
+            <div class="payload-examples">
+                <p>Try these in search:</p>
+                <div class="payload-buttons">
+                    <button onclick="setSearch('<script>alert(1)</script>')" class="btn btn-sm btn-outline">
+                        Script Tag
+                    </button>
+                    <button onclick="setSearch('<img src=x onerror=alert(1)>')" class="btn btn-sm btn-outline">
+                        Image onerror
+                    </button>
+                    <button onclick="setSearch('\" onmouseover=\"alert(1)')" class="btn btn-sm btn-outline">
+                        Event Handler
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3><i class="fas fa-exchange-alt"></i> JSONP Endpoint (Vulnerable)</h3>
+            <p>Vulnerable JSONP endpoint that doesn't validate callback:</p>
+            <div class="url-examples">
+                <a href="/dom/jsonp?callback=myCallback" class="btn btn-secondary">
+                    Normal: ?callback=myCallback
+                </a>
+                <a href="/dom/jsonp?callback=alert(1)//" class="btn btn-danger">
+                    Dangerous: ?callback=alert(1)//
+                </a>
+            </div>
+            
+            <div class="code-hint">
+                <p><strong>Vulnerability:</strong> Callback parameter is executed without validation</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3><i class="fas fa-redo"></i> Unsafe Redirect</h3>
+            <p>Client-side redirect with user input:</p>
+            <div class="redirect-box">
+                <input type="text" id="redirectUrl" class="form-control" 
+                       placeholder="Enter URL... try javascript:alert(1)">
+                <button onclick="unsafeRedirect()" class="btn btn-warning">
+                    <i class="fas fa-external-link-alt"></i> Redirect
+                </button>
+            </div>
+            <p class="small-text">Try: javascript:alert(document.domain)</p>
+        </div>
+
+        <div class="section">
+            <h3><i class="fas fa-cogs"></i> Dynamic Script Injection</h3>
+            <p>User-controlled script source:</p>
+            <div class="form-group">
+                <label for="scriptSource">Script Source URL:</label>
+                <input type="text" id="scriptSource" class="form-control" 
+                       value="https://code.jquery.com/jquery-3.6.0.min.js">
+                <button onclick="loadDynamicScript()" class="btn btn-primary btn-sm">
+                    Load Script
+                </button>
+            </div>
+            <div class="warning">
+                <p><strong>Warning:</strong> Loading scripts from user-controlled sources is dangerous!</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="learning-resources">
+        <h3><i class="fas fa-graduation-cap"></i> DOM XSS Specifics</h3>
+        <ul>
+            <li><strong>Sinks:</strong> innerHTML, outerHTML, document.write, eval, setTimeout, setInterval with user input</li>
+            <li><strong>Sources:</strong> location.href, location.hash, document.referrer, window.name, localStorage</li>
+            <li><strong>Prevention:</strong> Use textContent instead of innerHTML, validate and encode user input</li>
+            <li><strong>Tools:</strong> Use DOM Invader (Burp Suite) or browser developer tools</li>
+        </ul>
+    </div>
+</div>
+
+<script src="/js/dom-xss.js"></script>

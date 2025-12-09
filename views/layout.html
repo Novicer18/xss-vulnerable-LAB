@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - XSS Training Lab</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">XSS Training Lab</a>
+            <div class="nav-links">
+                <a href="/reflected" class="nav-link <%= currentPage === 'reflected' ? 'active' : '' %>">
+                    <i class="fas fa-bolt"></i> Reflected
+                </a>
+                <a href="/stored" class="nav-link <%= currentPage === 'stored' ? 'active' : '' %>">
+                    <i class="fas fa-database"></i> Stored
+                </a>
+                <a href="/dom" class="nav-link <%= currentPage === 'dom' ? 'active' : '' %>">
+                    <i class="fas fa-code"></i> DOM-Based
+                </a>
+                <a href="/admin" class="nav-link">
+                    <i class="fas fa-cog"></i> Admin
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <%- body %>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>WARNING:</strong> This application contains INTENTIONAL vulnerabilities for training purposes only.
+                Do not deploy in production environments.
+            </p>
+            <p class="copyright">
+                &copy; 2024 XSS Training Lab | Educational Use Only
+            </p>
+            <div class="footer-links">
+                <button onclick="resetComments()" class="btn btn-secondary btn-sm">
+                    <i class="fas fa-redo"></i> Reset Comments
+                </button>
+                <button onclick="clearLogs()" class="btn btn-secondary btn-sm">
+                    <i class="fas fa-trash"></i> Clear Logs
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<div class="challenge-container">
+    <div class="challenge-header">
+        <h1><i class="fas fa-bolt"></i> Reflected XSS Challenge</h1>
+        <div class="challenge-meta">
+            <span class="badge badge-easy">Difficulty: Easy</span>
+            <span class="badge badge-primary">Reflected</span>
+        </div>
+    </div>
+
+    <div class="challenge-description">
+        <h2><i class="fas fa-info-circle"></i> Description</h2>
+        <p>Reflected XSS occurs when user input is immediately returned by the web application in an unsafe manner. The malicious script is reflected off the web server, such as in an error message, search result, or any response that includes some or all of the input sent to the server as part of the request.</p>
+        
+        <div class="vulnerable-code">
+            <h4><i class="fas fa-code"></i> Vulnerable Code Pattern:</h4>
+            <pre><code>// Backend (Node.js/Express)
+app.get('/search', (req, res) => {
+    const query = req.query.q;
+    res.send(`&lt;p&gt;You searched for: ${query}&lt;/p&gt;`);
+    // No output encoding! XSS vulnerability
+});</code></pre>
+        </div>
+    </div>
+
+    <div class="hints">
+        <h3><i class="fas fa-lightbulb"></i> Hints</h3>
+        <ul>
+            <% hints.forEach(hint => { %>
+            <li><%= hint %></li>
+            <% }); %>
+        </ul>
+    </div>
+
+    <div class="challenge-sections">
+        <div class="section">
+            <h3><i class="fas fa-search"></i> Search Form (Vulnerable)</h3>
+            <form action="/reflected/search" method="GET" class="vulnerable-form">
+                <div class="form-group">
+                    <label for="search">Search Term:</label>
+                    <input type="text" id="search" name="q" class="form-control" 
+                           placeholder="Try XSS payloads here..." 
+                           value="<%= search %>">
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </form>
+            <div class="code-hint">
+                <p><strong>Vulnerability:</strong> Input is directly inserted into HTML without encoding</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3><i class="fas fa-user"></i> Welcome Message (Vulnerable)</h3>
+            <form action="/reflected" method="GET" class="vulnerable-form">
+                <div class="form-group">
+                    <label for="name">Enter your name:</label>
+                    <input type="text" id="name" name="name" class="form-control" 
+                           placeholder="Try: <script>alert(1)</script>" 
+                           value="<%= name %>">
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Submit
+                </button>
+            </form>
+            
+            <% if (name) { %>
+            <div class="result-display">
+                <h4>Result:</h4>
+                <div class="vulnerable-output">
+                    <p>Hello, <%= name %>! Welcome to the lab.</p>
+                </div>
+                <div class="raw-output">
+                    <strong>Raw HTML generated:</strong>
+                    <code>&lt;p&gt;Hello, <%= name %>! Welcome to the lab.&lt;/p&gt;</code>
+                </div>
+            </div>
+            <% } %>
+        </div>
+
+        <div class="section">
+            <h3><i class="fas fa-external-link-alt"></i> Profile Page (Vulnerable)</h3>
+            <p>Visit profile with user parameter:</p>
+            <div class="url-examples">
+                <a href="/reflected/profile?user=Alice" class="btn btn-secondary">
+                    Safe: /reflected/profile?user=Alice
+                </a>
+                <a href="/reflected/profile?user=<script>alert('XSS')</script>" class="btn btn-danger">
+                    Vulnerable: Try XSS payload
+                </a>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3><i class="fas fa-tools"></i> Testing Tools</h3>
+            <div class="payload-tester">
+                <h4>Test Payloads:</h4>
+                <div class="payload-buttons">
+                    <button onclick="testPayload('<script>alert(\"XSS\")</script>')" class="btn btn-sm btn-outline">
+                        Basic Script
+                    </button>
+                    <button onclick="testPayload('<img src=x onerror=alert(1)>')" class="btn btn-sm btn-outline">
+                        Image onerror
+                    </button>
+                    <button onclick="testPayload('<svg onload=alert(1)></svg>')" class="btn btn-sm btn-outline">
+                        SVG onload
+                    </button>
+                    <button onclick="testPayload('\"><script>alert(1)</script>')" class="btn btn-sm btn-outline">
+                        Quote Break
+                    </button>
+                </div>
+                
+                <div class="form-group">
+                    <label for="customPayload">Custom Payload:</label>
+                    <input type="text" id="customPayload" class="form-control" 
+                           placeholder="Enter your custom XSS payload">
+                    <button onclick="testCustomPayload()" class="btn btn-primary btn-sm">
+                        Test in Search
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="learning-resources">
+        <h3><i class="fas fa-graduation-cap"></i> Learning Resources</h3>
+        <ul>
+            <li><a href="https://owasp.org/www-community/attacks/xss/" target="_blank">OWASP XSS Documentation</a></li>
+            <li><a href="https://portswigger.net/web-security/cross-site-scripting" target="_blank">PortSwigger XSS Guide</a></li>
+            <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html" target="_blank">XSS Prevention Cheat Sheet</a></li>
+        </ul>
+    </div>
+</div>
+
+<script>
+function testPayload(payload) {
+    document.getElementById('search').value = payload;
+    document.getElementById('name').value = payload;
+    document.getElementById('customPayload').value = payload;
+}
+
+function testCustomPayload() {
+    const payload = document.getElementById('customPayload').value;
+    window.location.href = `/reflected/search?q=${encodeURIComponent(payload)}`;
+}
+</script>

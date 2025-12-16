@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title><%= title || 'Stored Admin' %></title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <h1>Stored XSS Admin View</h1>
+  <section>
+    <h2>Latest Comments</h2>
+    <ul>
+      <% (comments || []).forEach(function(c){ %>
+        <li>
+          <strong><%= c.username %></strong> @ <%= c.created_at %>
+          <div class="comment-body"><%- showRaw ? c.content : (c.content || '') %></div>
+        </li>
+      <% }) %>
+    </ul>
+  </section>
+  <section>
+    <h2>Recent Logs</h2>
+    <ul>
+      <% (logs || []).forEach(function(l){ %>
+        <li>
+          <strong>[<%= l.created_at %>]</strong> <em><%= l.action %></em>
+          <div><%= l.payload %></div>
+        </li>
+      <% }) %>
+    </ul>
+  </section>
+  <p><a href="/stored">Back to Stored</a></p>
+</body>
+</html>

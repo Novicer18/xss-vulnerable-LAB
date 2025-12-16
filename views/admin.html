@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title><%= title || 'Admin Panel' %></title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <h1>Admin Panel</h1>
+  <section>
+    <h2>Recent Logs (<%= totalLogs || (logs && logs.length) || 0 %>)</h2>
+    <ul>
+      <% (logs || []).forEach(function(log){ %>
+        <li>
+          <strong>[<%= log.created_at %>]</strong>
+          <em><%= log.module %></em> - <%= log.action %>
+          <div style="font-family:monospace; white-space:pre-wrap"><%= log.payload %></div>
+        </li>
+      <% }) %>
+    </ul>
+  </section>
+  <section>
+    <h2>Comments (<%= totalComments || (comments && comments.length) || 0 %>)</h2>
+    <ul>
+      <% (comments || []).forEach(function(c){ %>
+        <li>
+          <strong><%= c.username %></strong> @ <%= c.created_at %>
+          <div style="font-family:monospace; white-space:pre-wrap"><%= c.content %></div>
+        </li>
+      <% }) %>
+    </ul>
+  </section>
+  <p><a href="/">Back</a></p>
+</body>
+</html>

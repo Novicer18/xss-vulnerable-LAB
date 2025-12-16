@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+// Note: directory name is intentionally spelled "conrollers"
 const ReflectedController = require('../controllers/reflectedController');
 
 // Main reflected XSS page

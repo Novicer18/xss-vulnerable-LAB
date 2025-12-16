@@ -96,7 +96,7 @@ app.get('/search', (req, res) => {
             <div class="payload-tester">
                 <h4>Test Payloads:</h4>
                 <div class="payload-buttons">
-                    <button onclick="testPayload('<script>alert(\"XSS\")</script>')" class="btn btn-sm btn-outline">
+                    <button type="button" onclick="testPayload('&lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt;')" class="btn btn-sm btn-outline"></button>
                         Basic Script
                     </button>
                     <button onclick="testPayload('<img src=x onerror=alert(1)>')" class="btn btn-sm btn-outline">
@@ -105,7 +105,7 @@ app.get('/search', (req, res) => {
                     <button onclick="testPayload('<svg onload=alert(1)></svg>')" class="btn btn-sm btn-outline">
                         SVG onload
                     </button>
-                    <button onclick="testPayload('\"><script>alert(1)</script>')" class="btn btn-sm btn-outline">
+                    <button onclick="testPayload('&quot;&gt;&lt;script&gt;alert(1)&lt;/script&gt;')" class="btn btn-sm btn-outline"></button>
                         Quote Break
                     </button>
                 </div>

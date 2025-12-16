@@ -53,9 +53,9 @@ app.post('/comment', (req, res) => {
                 <div class="payload-suggestions">
                     <strong>Try these payloads:</strong>
                     <div class="payload-buttons">
-                        <button type="button" onclick="setPayload('<script>alert(\"Stored XSS\")</script>')" 
-                                class="btn btn-sm btn-outline">
-                            Basic Script
+                        <button type="button" onclick="setPayload('&lt;script&gt;alert(&quot;Stored XSS&quot;)&lt;/script&gt;')" 
+                            class="btn btn-sm btn-outline">
+                            Basic Script (escaped)
                         </button>
                         <button type="button" onclick="setPayload('<img src=x onerror=alert(document.cookie)>')" 
                                 class="btn btn-sm btn-outline">

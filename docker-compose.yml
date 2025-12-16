@@ -5,12 +5,10 @@ services:
     image: mysql:8.0
     container_name: xss_lab_mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:selsu1865}
-      MYSQL_DATABASE: ${DB_NAME:xss_lab}
-      MYSQL_USER: ${DB_USER:root}
-      MYSQL_PASSWORD: ${DB_PASSWORD:selsu1865}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-selsu1865}
+      MYSQL_DATABASE: ${DB_NAME:-xss_lab}
     ports:
-      - "3306:3306"
+      - "3307:3306"  # Use host 3307 to avoid local 3306 conflict
     volumes:
       - mysql_data:/var/lib/mysql
       - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
@@ -27,8 +25,8 @@ services:
       DB_HOST: mysql
       DB_PORT: 3306
       DB_NAME: ${DB_NAME:-xss_lab}
-      DB_USER: ${DB_USER:-xssuser}
-      DB_PASSWORD: ${DB_PASSWORD:-xsspassword}
+      DB_USER: ${DB_USER:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-selsu1865}
       SESSION_SECRET: ${SESSION_SECRET:-your-session-secret-here}
       NODE_ENV: development
     depends_on:

@@ -199,7 +199,22 @@ app.use((err, req, res, next) => {
 app.listen(PORT, async () => {
     console.log(`XSS Training Lab running on http://localhost:${PORT}`);
     console.log(`MySQL Database: ${dbConfig.host}:${dbConfig.port}/${dbConfig.database}`);
-    
+    // Ensure target database exists before model/table initialization
+    try {
+        const conn = await mysql.createConnection({
+            host: dbConfig.host,
+            port: dbConfig.port,
+            user: dbConfig.user,
+            password: dbConfig.password
+        });
+        await conn.query(
+            `CREATE DATABASE IF NOT EXISTS \`${dbConfig.database}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`
+        );
+        await conn.end();
+    } catch (err) {
+        console.error('Error ensuring database exists:', err);
+    }
+
     try {
         // Initialize models
         await CommentModel.initPool(pool);
